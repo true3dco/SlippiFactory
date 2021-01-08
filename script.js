@@ -1,7 +1,7 @@
 const { default: SlippiGame } = require('@slippi/slippi-js');
 var fs = require('fs');
 
-const game = new SlippiGame("test.slp");
+const game = new SlippiGame("Game_FoxVFox.slp");
 
 // Get game settings – stage, characters, etc
 const settings = game.getSettings();
@@ -25,6 +25,7 @@ console.log(game.getFrames()[500].players);
 let frameList = [];
 
 var keys = Object.keys(frames);
+keys.sort();
 keys.forEach(function(key){
     frameList.push(frames[key]);
 });
@@ -33,4 +34,4 @@ const newGame = {
     settings: game.getSettings(),
     frames: frameList,
 };
-fs.writeFileSync('./newGame.json', JSON.stringify(newGame, null, 2) , 'utf-8');
+fs.writeFileSync('./Game_FoxVFox.json', JSON.stringify(newGame, null, 2) , 'utf-8');``
