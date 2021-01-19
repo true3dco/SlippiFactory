@@ -1,7 +1,7 @@
 const { default: SlippiGame } = require('@slippi/slippi-js');
 var fs = require('fs');
-
-const game = new SlippiGame("Game_FoxVCap.slp");
+var fileName = "Game_SFATvHungryBox";
+const game = new SlippiGame("./Slippi/"+fileName + ".slp");
 
 // Get game settings – stage, characters, etc
 const settings = game.getSettings();
@@ -53,4 +53,4 @@ const newGame = {
     settings: game.getSettings(),
     frames: frameList,
 };
-fs.writeFileSync('./Game_FoxVCap.json', JSON.stringify(newGame, null, 2) , 'utf-8');``
+fs.writeFileSync('./Json/' + fileName+ ".json", JSON.stringify(newGame, null, 2) , 'utf-8');``
