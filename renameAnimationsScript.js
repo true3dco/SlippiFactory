@@ -1,7 +1,6 @@
 var fs = require('fs');
 
-var moveFrom = "D:/UnityProjects/SmashFactory/Assets/Resources/CharacterPrefabs/Jigglypuff/Animation/";
-
+var moveFrom = "";
 
 
 
@@ -16,7 +15,7 @@ fs.readdir(moveFrom, function (err, files) {
     files.forEach((file, index) => {
 
         var newName = file;
-        newName = newName.replace("PlyPurin5K_Share_ACTION_", "");
+        newName = newName.replace("PlyMars5K_Share_ACTION_", "");
         newName = newName.replace("_figatree", "");
         console.log(newName);
         fs.rename(moveFrom +file, moveFrom + newName, function (error) {

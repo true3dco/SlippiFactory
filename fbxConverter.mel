@@ -1,0 +1,52 @@
+ustring $characterDirectory = Path to model";
+string $characterList[] = `getFileList -folder $characterDirectory`;
+print(size($characterList));
+
+for( $j=0; $j<size($characterList); ++$j )
+{
+    $character = $characterList[$j];
+
+    $characterMayaFile = $characterDirectory + "\\"+ $character + "\\"+ $character + ".ma";
+    
+    string $directory = "D:\\SlippiIntegration\\Animation_Pack\\Textured_Models\\" + $character + "\\anims\\";
+    string $masterList[] = `getFileList -folder $directory -filespec "*.anim"`;
+
+    // UPDATE THE CHARACTER HERE
+    // *********************
+    if ($character == "Zelda"){
+        file -f -options "v=0;p=17;f=0"  -ignoreVersion  -typ "mayaAscii" -o $characterMayaFile;
+
+        print("\nProcessing: " + $character + "\n");
+        print(size($masterList));
+        $charAnimDir = "D:/Maya/" + $character;
+        sysFile -makeDir $charAnimDir;
+        $i = 0;
+        while($i<size($masterList))
+         { 
+            $animationName = $masterList[$i];
+            $i = $i + 1;
+            print("<<<<<<<<Animation:::" + $animationName);
+            print($i);
+            
+            
+            file -f -options "v=0;p=17;f=0"  -ignoreVersion  -typ "mayaAscii" -o $characterMayaFile;
+
+            string $selected[] = `ls -type joint`;
+            select -r $selected;
+            $fileToImport =  $directory + $animationName;
+            $baseAnimationName = basenameEx($animationName);
+            file -import -type "animImport"  -ignoreVersion -ra true -mergeNamespacesOnClash false -namespace $baseAnimationName -options "targetTime=4;copies=1;option=replace;pictures=0;connect=0;"  -pr  -importTimeRange "combine" $fileToImport;
+        
+        
+            string $selected[] = `ls -type joint`;
+            select -r $selected;
+            
+
+            $exportFileName = $charAnimDir + "/" +  $baseAnimationName + ".fbx";
+            file -force -options "precision=8;intValue=17;nodeNames=1;verboseUnits=0;whichRange=1;range=0:10;options=curve;hierarchy=none;controlPoints=0;shapes=1;helpPictures=0;useChannelBox=0;copyKeyCmd=-animation objects -option curve -hierarchy none -controlPoints 0 -shape 1 " -typ "FBX export" -pr -es $exportFileName;
+            
+        }
+     }
+}
+
+print("Finished");

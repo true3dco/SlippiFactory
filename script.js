@@ -1,56 +1,71 @@
 const { default: SlippiGame } = require('@slippi/slippi-js');
 var fs = require('fs');
-var fileName = "Game_SFATvHungryBox";
-const game = new SlippiGame("./Slippi/"+fileName + ".slp");
+const { dirname } = require('path');
 
-// Get game settings – stage, characters, etc
-const settings = game.getSettings();
-console.log(settings);
-
-// Get metadata - start time, platform played on, etc
-const metadata = game.getMetadata();
-//console.log(metadata);
-
-// Get computed stats - openings / kill, conversions, etc
-const stats = game.getStats();
-//console.log(stats);
-
-// Get frames – animation state, inputs, etc
-// This is used to compute your own stats or get more frame-specific info (advanced)
-const frames = game.getFrames();
-//console.log(frames[0].players); // Print frame when timer starts counting down
-console.log(game.getFrames()[500].players);
-
-
-let frameList = [];
-
-var keys = Object.keys(frames);
-var min = 100000;
-var max = -10000000;
-console.log(keys);
-
-keys.forEach( key=> {
-    var frameNumber = parseInt(key);
-    if (frameNumber > max){
-        max = frameNumber;
+var dir = ""
+var outputDir = dir + "json/"
+if (!fs.existsSync(outputDir )){
+    fs.mkdirSync(outputDir);
+}
+fs.readdir(dir, function (err, filenames) {
+    if (err) {
+        onError(err);
+        return;
     }
-    if (frameNumber < min) {
-        min = frameNumber;
-    }
+    filenames.forEach(function (filename) {
+        convertFile(dir, filename);
+    });
 });
 
-console.log(min);
-console.log(max);
-var i = min;
-while (i <= max) {
 
-    frameList.push(frames[i]);
-    i++;
+function convertFile( dir,  filename) {
+    const game = new SlippiGame(dir + filename);
+    const baseFileName =  filename.replace(".slp", "");
+
+    // Get game settings – stage, characters, etc
+    const settings = game.getSettings();
+
+    // Get metadata - start time, platform played on, etc
+    const metadata = game.getMetadata();
+    //console.log(metadata);
+
+    // Get computed stats - openings / kill, conversions, etc
+    const stats = game.getStats();
+    //console.log(stats);
+
+    // Get frames – animation state, inputs, etc
+    // This is used to compute your own stats or get more frame-specific info (advanced)
+    const frames = game.getFrames();
+    //console.log(frames[0].players); // Print frame when timer starts counting down
+
+
+    let frameList = [];
+
+    var keys = Object.keys(frames);
+    var min = 100000;
+    var max = -10000000;
+
+    keys.forEach(key => {
+        var frameNumber = parseInt(key);
+        if (frameNumber > max) {
+            max = frameNumber;
+        }
+        if (frameNumber < min) {
+            min = frameNumber;
+        }
+    });
+
+    var i = min;
+    while (i <= max) {
+
+        frameList.push(frames[i]);
+        i++;
+    }
+    console.log("Frame Length: " + (max - min));
+
+    const newGame = {
+        settings: game.getSettings(),
+        frames: frameList,
+    };
+    fs.writeFileSync(outputDir + baseFileName + ".json", JSON.stringify(newGame, null, 2), 'utf-8'); 
 }
-console.log( "Frame Length: " + (max - min));
-
-const newGame = {
-    settings: game.getSettings(),
-    frames: frameList,
-};
-fs.writeFileSync('./Json/' + fileName+ ".json", JSON.stringify(newGame, null, 2) , 'utf-8');``
