@@ -2,7 +2,7 @@ const { default: SlippiGame } = require('@slippi/slippi-js');
 var fs = require('fs');
 const { dirname } = require('path');
 
-var dir = ""
+var dir = "";
 var outputDir = dir + "json/"
 if (!fs.existsSync(outputDir )){
     fs.mkdirSync(outputDir);
@@ -13,7 +13,10 @@ fs.readdir(dir, function (err, filenames) {
         return;
     }
     filenames.forEach(function (filename) {
-        convertFile(dir, filename);
+        if (filename.endsWith(".slp")){
+            convertFile(dir, filename);
+        }
+        
     });
 });
 
