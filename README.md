@@ -1,6 +1,8 @@
 ﻿# SlippiFactory
 A collection of scripts that are useful for working with slippi files and related assets
 
+Contributions welcome!
+
 
 `script.js` - Turns `slp` into `json` files that are deserializable  by Unity
 
