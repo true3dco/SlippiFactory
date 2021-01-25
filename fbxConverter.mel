@@ -1,4 +1,11 @@
-ustring $characterDirectory = Path to model";
+// How to use=:
+
+// First load the model you want into Maya 2020
+// Then update the $character == <<"CHARACTER NAME">> to be the name of the character you want to convert anims for 
+// Update the input path on $characterDirectory
+// Run the script
+
+string $characterDirectory = "Path to model";
 string $characterList[] = `getFileList -folder $characterDirectory`;
 print(size($characterList));
 
