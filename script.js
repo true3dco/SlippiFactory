@@ -2,7 +2,7 @@ const { default: SlippiGame } = require('@slippi/slippi-js');
 var fs = require('fs');
 const { dirname } = require('path');
 
-var dir = "";
+var dir = "./Slippi/";
 var outputDir = dir + "json/"
 if (!fs.existsSync(outputDir )){
     fs.mkdirSync(outputDir);
@@ -27,10 +27,12 @@ function convertFile( dir,  filename) {
 
     // Get game settings – stage, characters, etc
     const settings = game.getSettings();
+    console.log(settings.players[0].nametag);
+    console.log(settings.players[1].nametag);
 
     // Get metadata - start time, platform played on, etc
     const metadata = game.getMetadata();
-    //console.log(metadata);
+    console.log(metadata.players);
 
     // Get computed stats - openings / kill, conversions, etc
     const stats = game.getStats();
@@ -69,6 +71,7 @@ function convertFile( dir,  filename) {
     const newGame = {
         settings: game.getSettings(),
         frames: frameList,
+        metaData: metadata,
     };
     fs.writeFileSync(outputDir + baseFileName + ".json", JSON.stringify(newGame, null, 2), 'utf-8'); 
 }
