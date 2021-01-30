@@ -1,7 +1,8 @@
 const { default: SlippiGame } = require("@slippi/slippi-js");
 const chokidar = require("chokidar");
+const { Console } = require("console");
 const _ = require("lodash");
-
+const slippiConverter = require("./slippiConverter");
 const listenPath = process.argv[2];
 console.log(`Listening at: ${listenPath}`);
 
@@ -13,9 +14,15 @@ const watcher = chokidar.watch(listenPath, {
 });
 
 const gameByPath = {};
+
+let batchSize = 600;
+let lastBatchSent = 0;
+let earliestFrameinTheMatch = 10000000;
+let outputDir = "";
+
 watcher.on("change", (path) => {
   const start = Date.now();
-  console.log("SOMETHING CHANGED");
+
   let gameState, settings, stats, frames, latestFrame, gameEnd;
   try {
     let game = _.get(gameByPath, [path, "game"]);
@@ -23,6 +30,7 @@ watcher.on("change", (path) => {
       console.log(`New file at: ${path}`);
       // Make sure to enable `processOnTheFly` to get updated stats as the game progresses
       game = new SlippiGame(path, { processOnTheFly: true });
+        
       gameByPath[path] = {
         game: game,
         state: {
@@ -51,46 +59,66 @@ watcher.on("change", (path) => {
 
   if (!gameState.settings && settings) {
     console.log(`[Game Start] New game has started`);
-    console.log(settings);
+    //console.log(settings);
     gameState.settings = settings;
+      // Start Dans BS
+      var filename = path.replace(/^.*[\\\/]/, '');
+      filename = filename.replace("Game_", "");
+      filename = filename.replace(".slp", "");
+
+      // Reset Vars
+      outputDir = "D:/SlippiStreamOutput/"+ filename+ "/";
+      lastBatchSent = 0;
+      earliestFrameinTheMatch = 10000000;
+
+
+      slippiConverter.writeSlpInitFile(outputDir, settings);
+      console.log("Init File Written");
+    // End Dans BS
+
+
   }
 
-  console.log(`We have ${_.size(frames)} frames.`);
+
+
+  // Dans BS
+  let numberOfFrames = _.size(frames);
+  if (numberOfFrames - lastBatchSent > batchSize) {
+    let framesToStream = numberOfFrames - lastBatchSent;
+    console.log("LatestFrame: "+ latestFrame.frame);
+    if (earliestFrameinTheMatch  > 0) {
+      Object.keys(frames).forEach(frameNumber => {
+        let frameNum = parseInt(frameNumber);
+        if (frameNum  < earliestFrameinTheMatch) {
+          earliestFrameinTheMatch = frameNum ;
+        }
+      });
+    }
+    
+    slippiConverter.writeSlpFrames(outputDir, frames, lastBatchSent + earliestFrameinTheMatch, framesToStream);
+
+    lastBatchSent = numberOfFrames;
+  }
+
+  // End Dans BS
+
+  //console.log(`We have ${numberOfFrames} frames.`);
+
+
+
+  //lastFrameStreamed = _.frames
   _.forEach(settings.players, (player) => {
     const frameData = _.get(latestFrame, ["players", player.playerIndex]);
     if (!frameData) {
       return;
     }
 
-    console.log(
-      `[Port ${player.port}] ${frameData.post.percent.toFixed(1)}% | ` + `${frameData.post.stocksRemaining} stocks`,
-    );
+    // console.log(
+    //   `[Port ${player.port}] ${frameData.post.percent.toFixed(1)}% | ` + `${frameData.post.stocksRemaining} stocks`,
+    // );
   });
 
-  // Uncomment this if you uncomment the stats calculation above. See comment above for details
-  // // Do some conversion detection logging
-  // // console.log(stats);
-  // _.forEach(stats.conversions, conversion => {
-  //   const key = `${conversion.playerIndex}-${conversion.startFrame}`;
-  //   const detected = _.get(gameState, ['detectedPunishes', key]);
-  //   if (!detected) {
-  //     console.log(`[Punish Start] Frame ${conversion.startFrame} by player ${conversion.playerIndex + 1}`);
-  //     gameState.detectedPunishes[key] = conversion;
-  //     return;
-  //   }
-
-  //   // If punish was detected previously, but just ended, let's output that
-  //   if (!detected.endFrame && conversion.endFrame) {
-  //     const dmg = conversion.endPercent - conversion.startPercent;
-  //     const dur = conversion.endFrame - conversion.startFrame;
-  //     console.log(
-  //       `[Punish End] Player ${conversion.playerIndex + 1}'s punish did ${dmg} damage ` +
-  //       `with ${conversion.moves.length} moves over ${dur} frames`
-  //     );
-  //   }
-
-  //   gameState.detectedPunishes[key] = conversion;
-  // });
+  
 
   if (gameEnd) {
     // NOTE: These values and the quitter index will not work until 2.0.0 recording code is
@@ -107,5 +135,9 @@ watcher.on("change", (path) => {
     console.log(`[Game Complete] Type: ${endMessage}${lrasText}`);
   }
 
-  console.log(`Read took: ${Date.now() - start} ms`);
+  // console.log(`Read took: ${Date.now() - start} ms`);
+
+
+  lastLatestFrame = latestFrame;
+  
 });
