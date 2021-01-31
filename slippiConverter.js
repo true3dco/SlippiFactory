@@ -133,5 +133,4 @@ module.exports = {
     writeSlpFrames,
     convertFile,
     printing: function () { console.log("workING"); }
-
 }
