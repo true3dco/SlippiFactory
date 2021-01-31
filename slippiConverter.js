@@ -111,7 +111,7 @@ function writeSlpInitFile(outputDir, settings) {
     fs.writeFileSync(outputDir + "init" + ".json", JSON.stringify(newGame, null, 2), 'utf-8');
 }
 
-function writeSlpFrames(outputDir, frames, start, end) {
+function writeSlpFrames(outputDir, frames, start, end, isFinal=false) {
     //let frameList = convertFramesIntoOrderedFrameList(frames);
     let frameList = getRelevantFrames(frames,start,end);
     console.log("start: "+ start);
@@ -120,9 +120,12 @@ function writeSlpFrames(outputDir, frames, start, end) {
     const framesToStream = {
         frames: frameList,
     };
+    let outputName = outputDir+start+"_"+ end;
+    if (isFinal) {
+         outputName += "_FINAL";
+    }
     // Sort Frames then write as JSON
-    fs.writeFileSync(outputDir + start +"_" + end + ".json", JSON.stringify(framesToStream, null, 2), 'utf-8');
-
+    fs.writeFileSync(outputName + ".json", JSON.stringify(framesToStream, null, 2), 'utf-8');
 }
 
 module.exports = {

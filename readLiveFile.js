@@ -79,12 +79,11 @@ watcher.on("change", (path) => {
 
   }
 
-
-
   // Dans BS
   let numberOfFrames = _.size(frames);
-  if (numberOfFrames - lastBatchSent > batchSize) {
-    let framesToStream = numberOfFrames - lastBatchSent;
+  let framesToStream = numberOfFrames - lastBatchSent;
+
+  if (framesToStream >= batchSize) {
     console.log("LatestFrame: "+ latestFrame.frame);
     if (earliestFrameinTheMatch  > 0) {
       Object.keys(frames).forEach(frameNumber => {
@@ -123,6 +122,8 @@ watcher.on("change", (path) => {
   if (gameEnd) {
     // NOTE: These values and the quitter index will not work until 2.0.0 recording code is
     // NOTE: used. This code has not been publicly released yet as it still has issues
+    slippiConverter.writeSlpFrames(outputDir, frames, lastBatchSent + earliestFrameinTheMatch, framesToStream);
+
     const endTypes = {
       1: "TIME!",
       2: "GAME!",
