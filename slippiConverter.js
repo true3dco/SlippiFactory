@@ -91,6 +91,12 @@ function getRelevantFrames(frames, start, framesToStream) {
     let frameList = [];
     let i = start;
     while (i < start + framesToStream) {
+        //console.log(Object.keys(frames[i]).length);
+        if (frames[i].players.length < 2) {
+            console.log("************ WE FOUND SOME SHIT");
+            console.log(frames[i].players.length);
+
+        }
         frameList.push(frames[i]);
         i++;
     }

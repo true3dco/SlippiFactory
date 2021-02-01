@@ -1,6 +1,8 @@
 var fs = require('fs');
 
-var moveFrom = "";
+var character= "Young_Link";
+var prefixToRemove ="Clink";
+var moveFrom = "D:/Repo/SlippiUnityVisualizer/Assets/Resources/CharacterPrefabs/" +character+ "/Animation/";
 
 
 
@@ -15,7 +17,9 @@ fs.readdir(moveFrom, function (err, files) {
     files.forEach((file, index) => {
 
         var newName = file;
-        newName = newName.replace("PlyMars5K_Share_ACTION_", "");
+        var prefix = "Ply" + prefixToRemove + "5K_Share_ACTION_";
+        //console.log(prefix);
+        newName = newName.replace(prefix, "");
         newName = newName.replace("_figatree", "");
         console.log(newName);
         fs.rename(moveFrom +file, moveFrom + newName, function (error) {
