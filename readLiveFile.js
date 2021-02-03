@@ -15,7 +15,7 @@ const watcher = chokidar.watch(listenPath, {
 
 const gameByPath = {};
 
-let batchSize = 600;
+let batchSize = 60;
 let lastBatchSent = 0;
 let earliestFrameinTheMatch = 10000000;
 let outputDir = "";
@@ -122,7 +122,7 @@ watcher.on("change", (path) => {
   if (gameEnd) {
     // NOTE: These values and the quitter index will not work until 2.0.0 recording code is
     // NOTE: used. This code has not been publicly released yet as it still has issues
-    slippiConverter.writeSlpFrames(outputDir, frames, lastBatchSent + earliestFrameinTheMatch, framesToStream);
+    slippiConverter.writeSlpFrames(outputDir, frames, lastBatchSent + earliestFrameinTheMatch, framesToStream, true);
 
     const endTypes = {
       1: "TIME!",
