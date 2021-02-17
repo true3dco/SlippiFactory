@@ -1,1 +1,5 @@
 ./Slippi/
+*~
+*.swp
+node_modules/
+*.log

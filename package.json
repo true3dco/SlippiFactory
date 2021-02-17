@@ -1,0 +1,25 @@
+{
+  "name": "SlippiFactory",
+  "version": "1.0.0",
+  "description": "A collection of scripts that are useful for working with slippi files and related assets",
+  "main": "readLiveFile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/true3dco/SlippiFactory.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/true3dco/SlippiFactory/issues"
+  },
+  "homepage": "https://github.com/true3dco/SlippiFactory#readme",
+  "dependencies": {
+    "@slippi/slippi-js": "^5.1.1",
+    "chokidar": "^3.5.1",
+    "lodash": "^4.17.20"
+  }
+}
