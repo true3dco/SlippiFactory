@@ -20,6 +20,7 @@
   "dependencies": {
     "@slippi/slippi-js": "^5.1.1",
     "chokidar": "^3.5.1",
-    "lodash": "^4.17.20"
+    "lodash": "^4.17.20",
+    "mkdirp": "^1.0.4"
   }
 }

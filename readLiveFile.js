@@ -1,9 +1,31 @@
 const { default: SlippiGame } = require("@slippi/slippi-js");
+const fs = require('fs');
+const path = require('path');
+const mkdirp = require('mkdirp');
 const chokidar = require("chokidar");
-const { Console } = require("console");
 const _ = require("lodash");
 const slippiConverter = require("./slippiConverter");
 const listenPath = process.argv[2];
+const baseOutputDir = process.argv[3];
+
+if (!listenPath || !baseOutputDir) {
+  console.error("Usage: readLiveFile.js <input_dir> <base_output_dir>");
+  process.exit(1);
+}
+
+if (!fs.existsSync(listenPath) || !fs.statSync(listenPath).isDirectory) {
+  console.error("Directory not found:", listenPath);
+  process.exit(1);
+}
+
+try {
+  mkdirp.sync(baseOutputDir);
+} catch (err) {
+  console.error("Failed to create output directory", baseOutputDir, "-", err.message);
+  process.exit(1);
+}
+
+
 console.log(`Listening at: ${listenPath}`);
 
 const watcher = chokidar.watch(listenPath, {
@@ -20,18 +42,18 @@ let lastBatchSent = 0;
 let earliestFrameinTheMatch = 10000000;
 let outputDir = "";
 
-watcher.on("change", (path) => {
+watcher.on("change", (watchPath) => {
   const start = Date.now();
 
   let gameState, settings, stats, frames, latestFrame, gameEnd;
   try {
-    let game = _.get(gameByPath, [path, "game"]);
+    let game = _.get(gameByPath, [watchPath, "game"]);
     if (!game) {
-      console.log(`New file at: ${path}`);
+      console.log(`New file at: ${watchPath}`);
       // Make sure to enable `processOnTheFly` to get updated stats as the game progresses
-      game = new SlippiGame(path, { processOnTheFly: true });
+      game = new SlippiGame(watchPath, { processOnTheFly: true });
         
-      gameByPath[path] = {
+      gameByPath[watchPath] = {
         game: game,
         state: {
           settings: null,
@@ -40,7 +62,7 @@ watcher.on("change", (path) => {
       };
     }
 
-    gameState = _.get(gameByPath, [path, "state"]);
+    gameState = _.get(gameByPath, [watchPath, "state"]);
 
     settings = game.getSettings();
 
@@ -62,12 +84,12 @@ watcher.on("change", (path) => {
     //console.log(settings);
     gameState.settings = settings;
       // Start Dans BS
-      var filename = path.replace(/^.*[\\\/]/, '');
+      var filename = watchPath.replace(/^.*[\\\/]/, '');
       filename = filename.replace("Game_", "");
       filename = filename.replace(".slp", "");
 
       // Reset Vars
-      outputDir = "D:/SlippiStreamOutput/"+ filename+ "/";
+      outputDir = path.join(baseOutputDir, filename) + path.sep;
       lastBatchSent = 0;
       earliestFrameinTheMatch = 10000000;
 
