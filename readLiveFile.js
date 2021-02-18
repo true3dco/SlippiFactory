@@ -29,7 +29,6 @@ try {
 console.log(`Listening at: ${listenPath}`);
 
 const watcher = chokidar.watch(listenPath, {
-  depth: 0,
   persistent: true,
   usePolling: true,
   ignoreInitial: true,
