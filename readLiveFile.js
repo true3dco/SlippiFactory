@@ -48,7 +48,7 @@ async function main() {
   watcher.on("change", (watchPath) => {
     const start = Date.now();
 
-    let gameState, settings, stats, frames, latestFrame, gameEnd;
+    let gameState, settings, frames, latestFrame, gameEnd;
     try {
       let game = _.get(gameByPath, [watchPath, "game"]);
       if (!game) {
@@ -93,7 +93,7 @@ async function main() {
       // Reset Vars
       outputDir = path.join(baseOutputDir, filename) + path.sep;
       lastBatchSent = 0;
-      earliestFrameinTheMatch = 10000000;
+      earliestFrameinTheMatch = Number.MAX_SAFE_INTEGER;
 
 
       slippiConverter.writeSlpInitFile(outputDir, settings);
